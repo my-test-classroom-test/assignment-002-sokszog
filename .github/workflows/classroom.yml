@@ -1,0 +1,45 @@
+name: Classroom Autograder
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.x' # Specify the .NET version you're using
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build the project
+      run: dotnet build --no-restore
+
+    - name: Run tests
+      run: dotnet test --logger "trx;LogFileName=TestResults.trx"
+
+    - name: Parse Test Results and Sum Points
+      run: |
+        # Extract the log output that contains "Points: 10"
+        cat TestResults/*.trx | grep "Points: 10" > points.log
+
+        # Count the number of "Points: 10" entries
+        POINTS=$(grep -c "Points: 10" points.log)
+
+        # Calculate the total points
+        TOTAL_POINTS=$((POINTS * 10))
+
+        # Output the total points
+        echo "Total Points: $TOTAL_POINTS"
+
+        # Fail the build if any tests failed
+        if [ "$TOTAL_POINTS" -eq 0 ]; then
+          echo "No points were awarded, there might be a problem with the tests."
+          exit 1
+        fi
