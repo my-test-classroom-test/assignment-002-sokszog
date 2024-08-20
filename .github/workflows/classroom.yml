@@ -23,19 +23,20 @@ jobs:
       run: dotnet build --no-restore
       working-directory: sokszog_feladat/sokszog_feladat
 
-    - name: Run tests
+    - name: Run tests and generate trx log
       run: dotnet test --logger "trx;LogFileName=TestResults.trx"
       working-directory: sokszog_feladat/sokszog_feladat
 
-    - name: Check Test Results Directory
+    - name: List all files in working directory
       run: |
-        echo "Listing contents of TestResults directory:"
-        ls -R sokszog_feladat/sokszog_feladat/TestResults || echo "TestResults directory not found"
+        echo "Listing all files in working directory:"
+        ls -R
+      working-directory: sokszog_feladat/sokszog_feladat
 
     - name: Parse Test Results and Sum Points
       run: |
-        # Find the .trx file
-        TRX_FILE=$(find sokszog_feladat/sokszog_feladat/TestResults -name '*.trx' | head -n 1)
+        # Find the .trx file in the current directory
+        TRX_FILE=$(find . -name 'TestResults.trx' | head -n 1)
 
         if [ -z "$TRX_FILE" ]; then
           echo "No .trx file found. Test execution might have failed."
@@ -61,3 +62,4 @@ jobs:
           echo "No points were awarded, there might be a problem with the tests."
           exit 1
         fi
+      working-directory: sokszog_feladat/sokszog_feladat
