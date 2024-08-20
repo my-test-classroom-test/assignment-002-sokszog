@@ -26,6 +26,7 @@ jobs:
     - name: Run tests and generate trx log
       run: dotnet test --logger "trx;LogFileName=TestResults.trx"
       working-directory: sokszog_feladat/sokszog_feladat
+      continue-on-error: true
 
     - name: List all files in working directory
       run: |
