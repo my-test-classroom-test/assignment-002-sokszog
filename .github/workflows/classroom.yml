@@ -24,7 +24,9 @@ jobs:
       working-directory: sokszog_feladat/sokszog_feladat
 
     - name: Run tests and generate trx log
-      run: dotnet test --logger "trx;LogFileName=TestResults.trx" --results-directory "./TestResults"
+      run: |
+        mkdir -p TestResults  # Ensure the directory exists
+        dotnet test --logger "trx;LogFileName=TestResults.trx" --results-directory "./TestResults"
       working-directory: sokszog_feladat/sokszog_feladat
       continue-on-error: true
 
@@ -37,7 +39,7 @@ jobs:
     - name: Parse Test Results and Sum Points
       run: |
         # Find the .trx file in the TestResults directory
-        TRX_FILE=$(find ./TestResults -name 'TestResults.trx' | head -n 1)
+        TRX_FILE=$(find sokszog_feladat/sokszog_feladat/TestResults -name 'TestResults.trx' | head -n 1)
 
         if [ -z "$TRX_FILE" ]; then
           echo "No .trx file found. Test execution might have failed."
