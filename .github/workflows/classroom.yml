@@ -17,12 +17,15 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
+      working-directory: sokszog_feladat/sokszog_feladat
 
     - name: Build the project
       run: dotnet build --no-restore
+      working-directory: sokszog_feladat/sokszog_feladat
 
     - name: Run tests
       run: dotnet test --logger "trx;LogFileName=TestResults.trx"
+      working-directory: sokszog_feladat/sokszog_feladat
 
     - name: Parse Test Results and Sum Points
       run: |
