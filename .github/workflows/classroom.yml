@@ -27,10 +27,25 @@ jobs:
       run: dotnet test --logger "trx;LogFileName=TestResults.trx"
       working-directory: sokszog_feladat/sokszog_feladat
 
+    - name: Check Test Results Directory
+      run: |
+        echo "Listing contents of TestResults directory:"
+        ls -R sokszog_feladat/sokszog_feladat/TestResults || echo "TestResults directory not found"
+
     - name: Parse Test Results and Sum Points
       run: |
+        # Find the .trx file
+        TRX_FILE=$(find sokszog_feladat/sokszog_feladat/TestResults -name '*.trx' | head -n 1)
+
+        if [ -z "$TRX_FILE" ]; then
+          echo "No .trx file found. Test execution might have failed."
+          exit 1
+        fi
+
+        echo "Using TRX file: $TRX_FILE"
+
         # Extract the log output that contains "Points: 10"
-        cat TestResults/*.trx | grep "Points: 10" > points.log
+        grep "Points: 10" "$TRX_FILE" > points.log || echo "No points found in TRX file"
 
         # Count the number of "Points: 10" entries
         POINTS=$(grep -c "Points: 10" points.log)
